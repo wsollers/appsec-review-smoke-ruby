@@ -1,0 +1,7 @@
+Upgrade tzinfo from 1.2.9 to 1.2.10
+
+tzinfo 1.2.9 loads a Ruby file named by the time zone identifier it is given,
+so a crafted identifier can load arbitrary code (GHSA-5cm2-9h8c-rvfx,
+CVE-2022-31163). We format report timestamps with tzinfo and the zone name
+can come from configuration, so the lock is moved to 1.2.10, which validates
+identifiers before loading.

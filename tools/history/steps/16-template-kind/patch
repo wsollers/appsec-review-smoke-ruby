@@ -1,0 +1,44 @@
+diff --git a/lib/helpers.rb b/lib/helpers.rb
+index e2716ac..cb9928b 100644
+--- a/lib/helpers.rb
++++ b/lib/helpers.rb
+@@ -1,7 +1,16 @@
+ # Small helpers shared by the controllers. Deliberately vulnerable smoke target; see README.md.
+ module Helpers
++  TEMPLATE_ROOT = "/var/lib/smoke/templates".freeze
++
+   # Warms the page cache before the first request.
+   def self.warm_cache
+     system("bin/true")
+   end
++
++  # Reads a template by name; the resolved path must stay under the template root.
++  def self.read_template(name)
++    path = File.expand_path(name, TEMPLATE_ROOT)
++    return nil unless path.start_with?(TEMPLATE_ROOT + "/")
++    File.read(path)
++  end
+ end
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index bbb8382..90f0bd8 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -2,6 +2,8 @@
+ # smoke target for appsec-review; see README.md.
+ require "json"
+ 
++require_relative "helpers"
++
+ class ReportsController < ActionController::Base
+   ATTACHMENT_ROOT = "/var/lib/smoke/attachments".freeze
+ 
+@@ -28,6 +30,9 @@ class ReportsController < ActionController::Base
+     when "attachment"
+       body = read_attachment(params[:name].to_s)
+       status = 404 if body.nil?
++    when "template"
++      body = Helpers.read_template(params[:name].to_s)
++      status = 404 if body.nil?
+     else
+       status = 400
+     end

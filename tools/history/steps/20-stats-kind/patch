@@ -1,0 +1,43 @@
+diff --git a/lib/helpers.rb b/lib/helpers.rb
+index 580acc1..24ecbe4 100644
+--- a/lib/helpers.rb
++++ b/lib/helpers.rb
+@@ -3,6 +3,17 @@ module Helpers
+   TEMPLATE_ROOT = "/var/lib/smoke/templates".freeze
+   TOOLS = ["status", "version"].freeze
+ 
++  @requests = 0
++
++  # Counts one served request.
++  def self.count!
++    @requests += 1
++  end
++
++  def self.requests
++    @requests
++  end
++
+   # Warms the page cache before the first request.
+   def self.warm_cache
+     system("bin/true")
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index d6f0698..31a77c9 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -36,6 +36,8 @@ class ReportsController < ActionController::Base
+       status = 404 if body.nil?
+     when "tool"
+       status = Helpers.run_tool(params[:tool].to_s) ? 200 : 400
++    when "stats"
++      body = "requests #{Helpers.requests}"
+     else
+       status = 400
+     end
+@@ -49,6 +51,7 @@ class ReportsController < ActionController::Base
+       body = "<pre>#{body}</pre>"
+     end
+     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
++    Helpers.count! if status >= 200 && status < 300
+     render plain: body, status: status
+   end
+ end

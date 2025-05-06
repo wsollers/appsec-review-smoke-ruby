@@ -1,0 +1,3 @@
+Revert "Append an X-Count header with the request counter to every reply"
+
+The header confuses the line-oriented client; revert until it can ignore it.

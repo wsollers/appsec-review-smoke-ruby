@@ -1,0 +1,26 @@
+diff --git a/lib/helpers.rb b/lib/helpers.rb
+new file mode 100644
+index 0000000..e2716ac
+--- /dev/null
++++ b/lib/helpers.rb
+@@ -0,0 +1,7 @@
++# Small helpers shared by the controllers. Deliberately vulnerable smoke target; see README.md.
++module Helpers
++  # Warms the page cache before the first request.
++  def self.warm_cache
++    system("bin/true")
++  end
++end
+diff --git a/lib/smoke.rb b/lib/smoke.rb
+index 0df243a..4275dc0 100644
+--- a/lib/smoke.rb
++++ b/lib/smoke.rb
+@@ -1,5 +1,8 @@
+ # Entry point of the smoke application: loads the controllers and the fixture program.
+ # This repository is a deliberately vulnerable smoke target for appsec-review; see README.md.
+ 
++require_relative "helpers"
+ require_relative "reports_controller"
+ require_relative "synthetic"
++
++Helpers.warm_cache

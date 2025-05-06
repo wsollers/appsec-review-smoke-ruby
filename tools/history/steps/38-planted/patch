@@ -1,0 +1,102 @@
+diff --git a/PLANTED.md b/PLANTED.md
+new file mode 100644
+index 0000000..e9ab9b8
+--- /dev/null
++++ b/PLANTED.md
+@@ -0,0 +1,96 @@
++# Planted inventory
++
++This repository is a smoke target for appsec-review. Everything below is deliberate. The
++evaluation answer key lives in the separate `appsec-review-smoke-guide` repository; this file
++describes the target, it is not the key.
++
++Line numbers refer to the tagged head. The fixture file `lib/synthetic.rb` is byte-identical to
++`tests/fixtures/graph/codeql_export/ruby-synthetic/source/synthetic.rb` in appsec-review, so the
++line numbers its `expected-facts.json` cites are unchanged.
++
++## Build
++
++appsec-review has no Ruby build profile and no catalog image carries a Ruby interpreter, so there
++is no pinned image in which the offline build (`ruby -c lib/*.rb`) can be proved. The syntax check
++was not executed by the Stage 3 verification; it is a recorded gap (appsec-review `docs/TODO.md`
++T-139). Syft, Semgrep, the history checks and the complexity measurement do not need Ruby and
++were run.
++
++## True positives, code
++
++| Id | Weakness | Where | Source to sink |
++| --- | --- | --- | --- |
++| TP-C1 | CWE-89 SQL injection | `lib/synthetic.rb` `UsersController#show` | `params[:name]` to `User.find_by_sql` (fixture case `remote_to_sql`) |
++| TP-C2 | CWE-78 command injection | `lib/synthetic.rb` `UsersController#run` | `params[:cmd]` to `system` (fixture case `remote_to_command`, the unguarded call) |
++| TP-C3 | CWE-22 path traversal | `lib/synthetic.rb` `UsersController#read_file` via `CachedStore#fetch` | `params[:path]` to `File.read` (fixture case `remote_to_path`) |
++| TP-C4 | CWE-918 server-side request forgery | `lib/synthetic.rb` `UsersController#download` | `params[:host]` to `Net::HTTP.get` (fixture case `remote_to_ssrf`) |
++| TP-C5 | CWE-502 unsafe deserialization | `lib/synthetic.rb` `UsersController#restore` | `params[:blob]` to `Marshal.load` (fixture case `remote_to_deserialization`) |
++| TP-C6 | CWE-117 log injection | `lib/reports_controller.rb` `ReportsController#show` | `params[:user]` to `Rails.logger.info` |
++| TP-C7 | CWE-601 open redirect | `lib/archive.rb` `ExportsController#done` | `params[:return_to]` to `redirect_to` |
++
++The fixture also carries `UsersController#dispatch_action` (`send(params[:helper])`, an
++unresolved reflective call) and the `ARGV`/`ENV` local sources in `Cli.main`.
++
++## True positives, dependencies
++
++Locked in `Gemfile.lock` and never required by any source file, so the build ignores them while
++SBOM tools that read the lockfile see them.
++
++| Id | Package | Version | Advisory | Fixed in | How present |
++| --- | --- | --- | --- | --- | --- |
++| TP-D1 | rack | 2.0.0 | GHSA-5r2p-j47h-mhpg (CVE-2018-16471) | 2.0.6 | direct dependency in `Gemfile` |
++| TP-D2 | sinatra | 2.0.0 | GHSA-h29f-7f56-j8wh (CVE-2018-7212), GHSA-mq35-wqvf-r23c (CVE-2018-11627) | 2.0.1, 2.0.2 | direct dependency in `Gemfile` |
++| TP-D3 | rexml | 3.2.4 | GHSA-8cr8-4vfw-mr7h (CVE-2021-28965) | 3.2.5 | transitive: recorded under `kramdown (2.3.1)` in `Gemfile.lock` only |
++
++rack 2.0.0 also has later advisories (for example CVE-2019-16782, CVE-2020-8161); the planted
++one is the oldest with the lowest fixed version. kramdown 2.3.1, mustermann 1.0.3,
++rack-protection 2.0.0, tilt 2.0.9 and thread_safe 0.3.6 have no OSV record and are not planted.
++
++## Fixed in history
++
++| Id | What | Introduced | Fixed |
++| --- | --- | --- | --- |
++| FX-C1 | CWE-78 command injection in `run_report` (backticks with the request's report name) | "Run the report helper named by the request" | "Fix command injection in run_report (CWE-78)": the sink was removed |
++| FX-C2 | CWE-22 path traversal in `read_attachment` | "Add an attachment kind that serves files from the attachment root" | "Fix path traversal in read_attachment (CWE-22)": `File.basename` now dominates `File.read` |
++| FX-D1 | tzinfo 1.2.9 (GHSA-5cm2-9h8c-rvfx, CVE-2022-31163) | "Add tzinfo 1.2.9 for report timestamps" | "Upgrade tzinfo from 1.2.9 to 1.2.10" |
++
++`SECURITY.md` and `CHANGELOG.md` describe the three fixed items and nothing else.
++
++## False positives
++
++appsec-review mounts no Semgrep rule for Ruby (`rules/semgrep/*.yml` target C, C++ and Java;
++`rules/sei-cert/rules/` has no `ruby` directory), so **no mounted rule reports any of these**.
++They are planted anyway as the constructs a Ruby pattern scanner would flag, each refuted by a
++code-intelligence fact.
++
++| Id | Where | Flagged by | Refuted by |
++| --- | --- | --- | --- |
++| FP-1 | `lib/helpers.rb` `Helpers.warm_cache`: `system("bin/true")` | no mounted rule reports it | constant operand: no `dataflow_path` reaches the sink |
++| FP-2 | `lib/helpers.rb` `Helpers.run_tool`: `system(tool)` | no mounted rule reports it | `guard_fact`: `TOOLS.include?(tool)` dominates the sink and constrains its operand |
++| FP-3 | `lib/helpers.rb` `Helpers.read_template`: `File.read(path)` | no mounted rule reports it | `path_sanitizers`: `File.expand_path` with a `start_with?(TEMPLATE_ROOT)` check dominates the sink |
++| FP-4 | `lib/helpers.rb` `Helpers.legacy_dump`: `File.read(path)` | no mounted rule reports it | dead code: no callers, no entry point, so no `dataflow_path` reaches it |
++
++## High-complexity function
++
++`ReportsController#show` in `lib/reports_controller.rb` is the dispatch of the application and
++the function the history touches most. It holds TP-C6. Its intended cyclomatic complexity is above
++15 by the appsec-review counter (branches, loops, `case`/`when` clauses, boolean operators and
++conditional expressions); the measured value is recorded in the guide.
++
++## Code-intelligence cases
++
++`lib/synthetic.rb` carries the appsec-review Ruby graph-export fixture unchanged: the five
++remote-to-sink paths, the `ARGV` and `ENV` local sources, a sanitized path (`File.basename` in
++`Store#fetch`), a dominating and a non-dominating guard (`UsersController#run`), virtual dispatch
++(`store_for(...).fetch`), an unresolved reflective call (`send`) and cross-function flow
++summaries (`CachedStore#fetch`, `Cli.query`). Ruby integers are arbitrary precision, so every
++`ranges` row is `not_applicable`. The fixed state of `read_attachment` adds a `File.basename`
++sanitizer.
++
++## History
++
++Produced by `tools/make-history.sh` from `tools/history/steps/`: 38 commits by three
++synthetic authors, dated 2025-05 to 2026-09, including the introduction and fix of each fixed
++item, a dependency upgrade, a rename (`lib/exports.rb` to `lib/archive.rb`), a revert and its
++reapply, a hardening review that adds `SECURITY.md`, and a commit body that records an
++investigated report found not exploitable (FP-2). Every commit touches at most three files.

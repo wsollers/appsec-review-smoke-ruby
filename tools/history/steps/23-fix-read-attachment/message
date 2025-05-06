@@ -1,0 +1,7 @@
+Fix path traversal in read_attachment (CWE-22)
+
+The attachment kind joined the requested name onto the attachment root and
+read the result, so "../" sequences read files outside the attachment
+directory. read_attachment now reduces the name to its base name with
+File.basename before joining it; the sanitizer runs on the only path to
+File.read, so the file opened is always directly under the root.

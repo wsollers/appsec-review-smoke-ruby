@@ -1,0 +1,12 @@
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index 05ad86a..bb0835c 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -24,6 +24,7 @@ class ReportsController < ActionController::Base
+     kind = params[:kind] || "daily"
+     format = params[:format] || "text"
+     page = params[:page].to_i
++    page = 1 if page < 1
+     status = 200
+     body = ""
+     case kind

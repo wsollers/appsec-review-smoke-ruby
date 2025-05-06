@@ -1,0 +1,4 @@
+Run the report helper named by the request
+
+The daily and weekly kinds now run the matching helper under bin/ and return
+its output.

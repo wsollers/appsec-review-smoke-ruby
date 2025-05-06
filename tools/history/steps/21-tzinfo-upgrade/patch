@@ -1,0 +1,44 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index c191809..3d7f2f0 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -9,3 +9,7 @@ All notable changes to this project are documented in this file. The format foll
+ 
+ - Reports controller with a `show` action.
+ - Bundler manifest locking rack, sinatra, kramdown and tzinfo.
++
++### Security
++
++- 2026-01-21: Upgraded tzinfo from 1.2.9 to 1.2.10 (GHSA-5cm2-9h8c-rvfx, CVE-2022-31163, arbitrary file load through a crafted time zone identifier).
+diff --git a/Gemfile b/Gemfile
+index 20c6c96..bf3e22f 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -3,4 +3,4 @@ source "https://rubygems.org"
+ gem "kramdown", "2.3.1"
+ gem "rack", "2.0.0"
+ gem "sinatra", "2.0.0"
+-gem "tzinfo", "1.2.9"
++gem "tzinfo", "1.2.10"
+diff --git a/Gemfile.lock b/Gemfile.lock
+index d4de561..b02e8d5 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -15,7 +15,7 @@ GEM
+       tilt (~> 2.0)
+     thread_safe (0.3.6)
+     tilt (2.0.9)
+-    tzinfo (1.2.9)
++    tzinfo (1.2.10)
+       thread_safe (~> 0.1)
+ 
+ PLATFORMS
+@@ -25,7 +25,7 @@ DEPENDENCIES
+   kramdown (= 2.3.1)
+   rack (= 2.0.0)
+   sinatra (= 2.0.0)
+-  tzinfo (= 1.2.9)
++  tzinfo (= 1.2.10)
+ 
+ BUNDLED WITH
+    2.4.19

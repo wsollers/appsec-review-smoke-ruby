@@ -1,0 +1,27 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 3d7f2f0..c2eae86 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -13,3 +13,4 @@ All notable changes to this project are documented in this file. The format foll
+ ### Security
+ 
+ - 2026-01-21: Upgraded tzinfo from 1.2.9 to 1.2.10 (GHSA-5cm2-9h8c-rvfx, CVE-2022-31163, arbitrary file load through a crafted time zone identifier).
++- 2026-02-05: Fixed command injection in `run_report` (CWE-78); report names now select a recorded summary and no command runs.
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index 31a77c9..49a7b1d 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -6,10 +6,11 @@ require_relative "helpers"
+ 
+ class ReportsController < ActionController::Base
+   ATTACHMENT_ROOT = "/var/lib/smoke/attachments".freeze
++  REPORTS = { "daily" => "daily summary", "weekly" => "weekly summary" }.freeze
+ 
+-  # Runs the report helper named by the request and returns its output.
++  # Returns the recorded summary of one of the two reports; any other name yields nil.
+   def run_report(name)
+-    `bin/report #{name}`
++    REPORTS[name]
+   end
+ 
+   # Reads an attachment named by the request from the attachment root.

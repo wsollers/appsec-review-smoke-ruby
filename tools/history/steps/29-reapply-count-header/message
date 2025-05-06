@@ -1,0 +1,3 @@
+Reapply "Append an X-Count header with the request counter to every reply"
+
+The client now ignores unknown headers.

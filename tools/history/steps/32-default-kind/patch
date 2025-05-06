@@ -1,0 +1,13 @@
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index be8497c..05ad86a 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -21,7 +21,7 @@ class ReportsController < ActionController::Base
+ 
+   # Renders one report; the request selects the report, its format, filters and paging.
+   def show
+-    kind = params[:kind]
++    kind = params[:kind] || "daily"
+     format = params[:format] || "text"
+     page = params[:page].to_i
+     status = 200

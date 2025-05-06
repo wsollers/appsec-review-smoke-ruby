@@ -1,0 +1,26 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index c2eae86..1feb0d5 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -14,3 +14,4 @@ All notable changes to this project are documented in this file. The format foll
+ 
+ - 2026-01-21: Upgraded tzinfo from 1.2.9 to 1.2.10 (GHSA-5cm2-9h8c-rvfx, CVE-2022-31163, arbitrary file load through a crafted time zone identifier).
+ - 2026-02-05: Fixed command injection in `run_report` (CWE-78); report names now select a recorded summary and no command runs.
++- 2026-02-20: Fixed path traversal in `read_attachment` (CWE-22); the requested name is reduced to its base name before the file is opened.
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index 49a7b1d..c7a2711 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -13,9 +13,10 @@ class ReportsController < ActionController::Base
+     REPORTS[name]
+   end
+ 
+-  # Reads an attachment named by the request from the attachment root.
++  # Reads an attachment named by the request; the name is reduced to its base name first,
++  # so the file opened is always directly under the attachment root.
+   def read_attachment(name)
+-    File.read(File.join(ATTACHMENT_ROOT, name))
++    File.read(File.join(ATTACHMENT_ROOT, File.basename(name)))
+   end
+ 
+   # Renders one report; the request selects the report, its format, filters and paging.

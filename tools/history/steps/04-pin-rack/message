@@ -1,0 +1,3 @@
+Pin rack 2.0.0 for the request helpers
+
+Locked so every environment resolves the same rack.

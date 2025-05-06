@@ -1,0 +1,4 @@
+Add the reports controller with a show action
+
+lib/smoke.rb loads the controllers; ReportsController#show dispatches on the
+report kind the request names.

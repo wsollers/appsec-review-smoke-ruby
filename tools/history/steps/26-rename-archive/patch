@@ -1,0 +1,17 @@
+diff --git a/lib/exports.rb b/lib/archive.rb
+similarity index 100%
+rename from lib/exports.rb
+rename to lib/archive.rb
+diff --git a/lib/smoke.rb b/lib/smoke.rb
+index 8bd3d10..441d228 100644
+--- a/lib/smoke.rb
++++ b/lib/smoke.rb
+@@ -3,7 +3,7 @@
+ 
+ require_relative "helpers"
+ require_relative "reports_controller"
+-require_relative "exports"
++require_relative "archive"
+ require_relative "synthetic"
+ 
+ Helpers.warm_cache

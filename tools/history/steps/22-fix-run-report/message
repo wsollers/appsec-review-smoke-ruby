@@ -1,0 +1,8 @@
+Fix command injection in run_report (CWE-78)
+
+The daily and weekly kinds interpolated the report name from the request into
+a shell command and ran it with backticks, so a name containing shell
+metacharacters ran arbitrary commands as the application user. run_report
+now looks the name up in a fixed table of recorded summaries and returns
+the match: there is no command string and no shell, so no request input
+reaches a command interpreter.

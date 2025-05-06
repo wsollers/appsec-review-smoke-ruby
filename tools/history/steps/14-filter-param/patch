@@ -1,0 +1,23 @@
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index dc359be..bbb8382 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -15,7 +15,7 @@ class ReportsController < ActionController::Base
+     File.read(File.join(ATTACHMENT_ROOT, name))
+   end
+ 
+-  # Renders one report; the request selects the report, its format.
++  # Renders one report; the request selects the report, its format, filters.
+   def show
+     kind = params[:kind]
+     format = params[:format] || "text"
+@@ -32,6 +32,9 @@ class ReportsController < ActionController::Base
+       status = 400
+     end
+     body = body.to_s
++    if status == 200 && params[:filter] && !params[:filter].empty?
++      body = body.include?(params[:filter]) ? body : ""
++    end
+     if format == "json"
+       body = { "body" => body }.to_json
+     elsif format == "html"

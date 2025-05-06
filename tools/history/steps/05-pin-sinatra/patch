@@ -1,0 +1,37 @@
+diff --git a/Gemfile b/Gemfile
+index 4a4afbc..2ecb216 100644
+--- a/Gemfile
++++ b/Gemfile
+@@ -1,3 +1,4 @@
+ source "https://rubygems.org"
+ 
+ gem "rack", "2.0.0"
++gem "sinatra", "2.0.0"
+diff --git a/Gemfile.lock b/Gemfile.lock
+index 295377c..f05a600 100644
+--- a/Gemfile.lock
++++ b/Gemfile.lock
+@@ -1,13 +1,23 @@
+ GEM
+   remote: https://rubygems.org/
+   specs:
++    mustermann (1.0.3)
+     rack (2.0.0)
++    rack-protection (2.0.0)
++      rack
++    sinatra (2.0.0)
++      mustermann (~> 1.0)
++      rack (~> 2.0)
++      rack-protection (= 2.0.0)
++      tilt (~> 2.0)
++    tilt (2.0.9)
+ 
+ PLATFORMS
+   ruby
+ 
+ DEPENDENCIES
+   rack (= 2.0.0)
++  sinatra (= 2.0.0)
+ 
+ BUNDLED WITH
+    2.4.19

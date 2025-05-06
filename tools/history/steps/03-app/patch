@@ -1,0 +1,37 @@
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+new file mode 100644
+index 0000000..b2b1940
+--- /dev/null
++++ b/lib/reports_controller.rb
+@@ -0,0 +1,20 @@
++# Report viewing for the smoke application. This repository is a deliberately vulnerable
++# smoke target for appsec-review; see README.md.
++
++class ReportsController < ActionController::Base
++
++  # Renders one report; the request selects the report.
++  def show
++    kind = params[:kind]
++    status = 200
++    body = ""
++    case kind
++    when "daily", "weekly"
++      body = "#{kind} report"
++    else
++      status = 400
++    end
++    body = body.to_s
++    render plain: body, status: status
++  end
++end
+diff --git a/lib/smoke.rb b/lib/smoke.rb
+new file mode 100644
+index 0000000..0df243a
+--- /dev/null
++++ b/lib/smoke.rb
+@@ -0,0 +1,5 @@
++# Entry point of the smoke application: loads the controllers and the fixture program.
++# This repository is a deliberately vulnerable smoke target for appsec-review; see README.md.
++
++require_relative "reports_controller"
++require_relative "synthetic"

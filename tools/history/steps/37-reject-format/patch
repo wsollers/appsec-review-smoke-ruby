@@ -1,0 +1,13 @@
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index a3752b7..ce4b502 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -53,6 +53,8 @@ class ReportsController < ActionController::Base
+       body = { "body" => body, "page" => page }.to_json
+     elsif format == "html"
+       body = "<pre>#{ERB::Util.html_escape(body)}</pre>"
++    elsif format != "text"
++      status = 400
+     end
+     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
+     Helpers.count! if status >= 200 && status < 300

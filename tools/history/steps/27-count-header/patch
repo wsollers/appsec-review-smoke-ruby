@@ -1,0 +1,12 @@
+diff --git a/lib/reports_controller.rb b/lib/reports_controller.rb
+index c7a2711..be8497c 100644
+--- a/lib/reports_controller.rb
++++ b/lib/reports_controller.rb
+@@ -54,6 +54,7 @@ class ReportsController < ActionController::Base
+     end
+     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
+     Helpers.count! if status >= 200 && status < 300
++    response.headers["X-Count"] = Helpers.requests.to_s
+     render plain: body, status: status
+   end
+ end

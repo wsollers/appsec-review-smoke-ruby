@@ -1,0 +1,14 @@
+diff --git a/lib/helpers.rb b/lib/helpers.rb
+index 9c6807d..580acc1 100644
+--- a/lib/helpers.rb
++++ b/lib/helpers.rb
+@@ -20,4 +20,9 @@ module Helpers
+     return nil unless path.start_with?(TEMPLATE_ROOT + "/")
+     File.read(path)
+   end
++
++  # Older dump routine kept for reference; nothing calls it.
++  def self.legacy_dump(path)
++    File.read(path)
++  end
+ end

@@ -1,0 +1,7 @@
+Review the run_tool command report
+
+A scanner flagged system(tool) in Helpers.run_tool as a command built from
+request input. The name is checked against the fixed TOOLS list on the only
+path that reaches the call, so nothing but the two listed tools can run:
+not exploitable, and the call is unchanged. Documented the check in a
+comment so the next reader does not reopen it.

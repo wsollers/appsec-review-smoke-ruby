@@ -1,0 +1,33 @@
+diff --git a/lib/exports.rb b/lib/exports.rb
+new file mode 100644
+index 0000000..9a2787c
+--- /dev/null
++++ b/lib/exports.rb
+@@ -0,0 +1,15 @@
++# Export download flow for the smoke application. Deliberately vulnerable smoke target; see README.md.
++class ExportsController < ActionController::Base
++  EXPORT_ROOT = "/var/lib/smoke/exports".freeze
++
++  # Lists the finished exports.
++  def index
++    render plain: Dir.children(EXPORT_ROOT).sort.join("\n")
++  end
++
++  # Marks an export as collected and returns the client to the page it came from.
++  def done
++    Rails.cache.delete(params[:id].to_s)
++    redirect_to params[:return_to]
++  end
++end
+diff --git a/lib/smoke.rb b/lib/smoke.rb
+index 4275dc0..8bd3d10 100644
+--- a/lib/smoke.rb
++++ b/lib/smoke.rb
+@@ -3,6 +3,7 @@
+ 
+ require_relative "helpers"
+ require_relative "reports_controller"
++require_relative "exports"
+ require_relative "synthetic"
+ 
+ Helpers.warm_cache

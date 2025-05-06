@@ -1,0 +1,12 @@
+diff --git a/.rubocop.yml b/.rubocop.yml
+new file mode 100644
+index 0000000..ff21ace
+--- /dev/null
++++ b/.rubocop.yml
+@@ -0,0 +1,6 @@
++AllCops:
++  TargetRubyVersion: 3.3
++  NewCops: enable
++
++Style/Documentation:
++  Enabled: false

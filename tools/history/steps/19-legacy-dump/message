@@ -1,0 +1,3 @@
+Move the legacy dump routine into helpers
+
+Kept for reference while the old export format is still documented.
