@@ -3,6 +3,11 @@
 
 class ReportsController < ActionController::Base
 
+  # Runs the report helper named by the request and returns its output.
+  def run_report(name)
+    `bin/report #{name}`
+  end
+
   # Renders one report; the request selects the report.
   def show
     kind = params[:kind]
@@ -10,7 +15,8 @@ class ReportsController < ActionController::Base
     body = ""
     case kind
     when "daily", "weekly"
-      body = "#{kind} report"
+      body = run_report(kind)
+      status = 500 if body.nil?
     else
       status = 400
     end
