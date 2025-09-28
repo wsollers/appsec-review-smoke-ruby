@@ -1,5 +1,6 @@
 # Report viewing for the smoke application. This repository is a deliberately vulnerable
 # smoke target for appsec-review; see README.md.
+require "json"
 
 class ReportsController < ActionController::Base
   ATTACHMENT_ROOT = "/var/lib/smoke/attachments".freeze
@@ -14,9 +15,10 @@ class ReportsController < ActionController::Base
     File.read(File.join(ATTACHMENT_ROOT, name))
   end
 
-  # Renders one report; the request selects the report.
+  # Renders one report; the request selects the report, its format.
   def show
     kind = params[:kind]
+    format = params[:format] || "text"
     status = 200
     body = ""
     case kind
@@ -30,6 +32,11 @@ class ReportsController < ActionController::Base
       status = 400
     end
     body = body.to_s
+    if format == "json"
+      body = { "body" => body }.to_json
+    elsif format == "html"
+      body = "<pre>#{body}</pre>"
+    end
     render plain: body, status: status
   end
 end
