@@ -37,6 +37,7 @@ class ReportsController < ActionController::Base
     elsif format == "html"
       body = "<pre>#{body}</pre>"
     end
+    Rails.logger.info("report #{kind} viewed by #{params[:user]}")
     render plain: body, status: status
   end
 end
