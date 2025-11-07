@@ -3,6 +3,7 @@
 
 require_relative "helpers"
 require_relative "reports_controller"
+require_relative "exports"
 require_relative "synthetic"
 
 Helpers.warm_cache
