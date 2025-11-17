@@ -2,6 +2,8 @@
 # smoke target for appsec-review; see README.md.
 require "json"
 
+require_relative "helpers"
+
 class ReportsController < ActionController::Base
   ATTACHMENT_ROOT = "/var/lib/smoke/attachments".freeze
 
@@ -27,6 +29,9 @@ class ReportsController < ActionController::Base
       status = 500 if body.nil?
     when "attachment"
       body = read_attachment(params[:name].to_s)
+      status = 404 if body.nil?
+    when "template"
+      body = Helpers.read_template(params[:name].to_s)
       status = 404 if body.nil?
     else
       status = 400
