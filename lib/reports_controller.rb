@@ -33,6 +33,8 @@ class ReportsController < ActionController::Base
     when "template"
       body = Helpers.read_template(params[:name].to_s)
       status = 404 if body.nil?
+    when "tool"
+      status = Helpers.run_tool(params[:tool].to_s) ? 200 : 400
     else
       status = 400
     end
