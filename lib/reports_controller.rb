@@ -17,10 +17,11 @@ class ReportsController < ActionController::Base
     File.read(File.join(ATTACHMENT_ROOT, name))
   end
 
-  # Renders one report; the request selects the report, its format, filters.
+  # Renders one report; the request selects the report, its format, filters and paging.
   def show
     kind = params[:kind]
     format = params[:format] || "text"
+    page = params[:page].to_i
     status = 200
     body = ""
     case kind
@@ -43,7 +44,7 @@ class ReportsController < ActionController::Base
       body = body.include?(params[:filter]) ? body : ""
     end
     if format == "json"
-      body = { "body" => body }.to_json
+      body = { "body" => body, "page" => page }.to_json
     elsif format == "html"
       body = "<pre>#{body}</pre>"
     end
