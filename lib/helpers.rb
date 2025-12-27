@@ -20,4 +20,9 @@ module Helpers
     return nil unless path.start_with?(TEMPLATE_ROOT + "/")
     File.read(path)
   end
+
+  # Older dump routine kept for reference; nothing calls it.
+  def self.legacy_dump(path)
+    File.read(path)
+  end
 end
