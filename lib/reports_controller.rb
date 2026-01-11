@@ -36,6 +36,8 @@ class ReportsController < ActionController::Base
       status = 404 if body.nil?
     when "tool"
       status = Helpers.run_tool(params[:tool].to_s) ? 200 : 400
+    when "stats"
+      body = "requests #{Helpers.requests}"
     else
       status = 400
     end
@@ -49,6 +51,7 @@ class ReportsController < ActionController::Base
       body = "<pre>#{body}</pre>"
     end
     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
+    Helpers.count! if status >= 200 && status < 300
     render plain: body, status: status
   end
 end

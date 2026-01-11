@@ -3,6 +3,17 @@ module Helpers
   TEMPLATE_ROOT = "/var/lib/smoke/templates".freeze
   TOOLS = ["status", "version"].freeze
 
+  @requests = 0
+
+  # Counts one served request.
+  def self.count!
+    @requests += 1
+  end
+
+  def self.requests
+    @requests
+  end
+
   # Warms the page cache before the first request.
   def self.warm_cache
     system("bin/true")
