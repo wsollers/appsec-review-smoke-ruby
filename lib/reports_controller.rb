@@ -6,10 +6,11 @@ require_relative "helpers"
 
 class ReportsController < ActionController::Base
   ATTACHMENT_ROOT = "/var/lib/smoke/attachments".freeze
+  REPORTS = { "daily" => "daily summary", "weekly" => "weekly summary" }.freeze
 
-  # Runs the report helper named by the request and returns its output.
+  # Returns the recorded summary of one of the two reports; any other name yields nil.
   def run_report(name)
-    `bin/report #{name}`
+    REPORTS[name]
   end
 
   # Reads an attachment named by the request from the attachment root.
