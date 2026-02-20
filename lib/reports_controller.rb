@@ -13,9 +13,10 @@ class ReportsController < ActionController::Base
     REPORTS[name]
   end
 
-  # Reads an attachment named by the request from the attachment root.
+  # Reads an attachment named by the request; the name is reduced to its base name first,
+  # so the file opened is always directly under the attachment root.
   def read_attachment(name)
-    File.read(File.join(ATTACHMENT_ROOT, name))
+    File.read(File.join(ATTACHMENT_ROOT, File.basename(name)))
   end
 
   # Renders one report; the request selects the report, its format, filters and paging.
