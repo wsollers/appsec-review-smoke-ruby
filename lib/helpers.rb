@@ -20,6 +20,8 @@ module Helpers
   end
 
   # Runs one of the two maintenance tools; any other name is refused.
+  # The name is matched against TOOLS on the only path to the call, so no other command
+  # can run (reviewed 2026-03; see the commit log).
   def self.run_tool(tool)
     return false unless TOOLS.include?(tool)
     system(tool)
