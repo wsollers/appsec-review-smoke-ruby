@@ -1,0 +1,24 @@
+# Security notes
+
+This repository is a deliberately vulnerable smoke target. It is never deployed, so there is no
+disclosure process. The entries below record the issues that were fixed in this history, so that
+the record of what changed and why is in one place.
+
+## 2026-02-20: path traversal in `read_attachment` (CWE-22)
+
+The `attachment` kind joined the client-supplied name onto the attachment root and read the
+result, so a name containing `../` read files outside the attachment directory. `read_attachment`
+now reduces the name to its base name with `File.basename` before joining it, so the file opened is
+always directly under the attachment root.
+
+## 2026-02-05: command injection in `run_report` (CWE-78)
+
+The `daily` and `weekly` kinds interpolated the client-supplied report name into a shell command
+and ran it with backticks, so shell metacharacters in the name ran arbitrary commands.
+`run_report` now looks the name up in a fixed table of recorded summaries; there is no command
+string and no shell.
+
+## 2026-01-21: tzinfo 1.2.9 (GHSA-5cm2-9h8c-rvfx, CVE-2022-31163)
+
+tzinfo 1.2.9 loaded a Ruby file named by a crafted time zone identifier. The lock was moved to
+1.2.10, which validates identifiers before loading.
