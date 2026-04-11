@@ -54,6 +54,7 @@ class ReportsController < ActionController::Base
     end
     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
     Helpers.count! if status >= 200 && status < 300
+    response.headers["X-Count"] = Helpers.requests.to_s
     render plain: body, status: status
   end
 end
