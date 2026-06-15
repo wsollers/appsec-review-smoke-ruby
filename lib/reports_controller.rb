@@ -21,7 +21,7 @@ class ReportsController < ActionController::Base
 
   # Renders one report; the request selects the report, its format, filters and paging.
   def show
-    kind = params[:kind]
+    kind = params[:kind] || "daily"
     format = params[:format] || "text"
     page = params[:page].to_i
     status = 200
