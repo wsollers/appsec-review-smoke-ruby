@@ -24,6 +24,7 @@ class ReportsController < ActionController::Base
     kind = params[:kind] || "daily"
     format = params[:format] || "text"
     page = params[:page].to_i
+    page = 1 if page < 1
     status = 200
     body = ""
     case kind
