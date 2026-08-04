@@ -1,5 +1,6 @@
 # Report viewing for the smoke application. This repository is a deliberately vulnerable
 # smoke target for appsec-review; see README.md.
+require "erb"
 require "json"
 
 require_relative "helpers"
@@ -51,7 +52,7 @@ class ReportsController < ActionController::Base
     if format == "json"
       body = { "body" => body, "page" => page }.to_json
     elsif format == "html"
-      body = "<pre>#{body}</pre>"
+      body = "<pre>#{ERB::Util.html_escape(body)}</pre>"
     end
     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
     Helpers.count! if status >= 200 && status < 300
