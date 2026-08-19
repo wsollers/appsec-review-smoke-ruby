@@ -53,6 +53,8 @@ class ReportsController < ActionController::Base
       body = { "body" => body, "page" => page }.to_json
     elsif format == "html"
       body = "<pre>#{ERB::Util.html_escape(body)}</pre>"
+    elsif format != "text"
+      status = 400
     end
     Rails.logger.info("report #{kind} viewed by #{params[:user]}")
     Helpers.count! if status >= 200 && status < 300
