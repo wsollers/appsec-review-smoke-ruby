@@ -4,7 +4,7 @@ GEM
     kramdown (2.3.1)
       rexml
     mustermann (1.0.3)
-    rack (2.0.0)
+    rack (2.2.25)
     rack-protection (2.0.0)
       rack
     rexml (3.2.4)
@@ -23,7 +23,7 @@ PLATFORMS
 
 DEPENDENCIES
   kramdown (= 2.3.1)
-  rack (= 2.0.0)
+  rack (= 2.2.25)
   sinatra (= 2.0.0)
   tzinfo (= 1.2.10)
 
